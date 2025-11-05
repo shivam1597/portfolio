@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base href="/portfolio/">
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="Shivam Chouhan - Backend Engineer & AI Integration Specialist">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0A0A0A">
+  <title>Shivam Chouhan - Software Engineer</title>
+
+  <!-- Preconnect for faster font loading -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="favicon.png">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    }
+
+    body {
+      background-color: #0A0A0A;
+      overflow: hidden;
+    }
+
+    /* Loading indicator - Full screen */
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100vh;
+      background: linear-gradient(135deg, #0A0A0A 0%, #1A1A2E 50%, #0A0A0A 100%);
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 9999;
+    }
+
+    .spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(0, 217, 255, 0.1);
+      border-top-color: #00D9FF;
+      border-right-color: #00D9FF;
+      border-radius: 50%;
+      animation: spin 1.2s linear infinite;
+    }
+
+    .loading-text {
+      margin-top: 20px;
+      color: #00D9FF;
+      font-size: 16px;
+      letter-spacing: 1px;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+    }
+
+    flutter-view {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+<div class="loading-container" id="loading">
+  <div class="spinner"></div>
+  <div class="loading-text">Loading Portfolio...</div>
+</div>
+
+<div id="app"></div>
+
+<script>
+  const serviceWorkerVersion = "1395095953";
+  var scriptLoaded = false;
+
+  window.addEventListener('load', function(ev) {
+    // Remove loading screen when Flutter app is ready
+    var loadingContainer = document.getElementById('loading');
+
+    // Try to load flutter.js
+    _flutter.loader.loadEntrypoint({
+      serviceWorker: {
+        serviceWorkerVersion: serviceWorkerVersion,
+      },
+      onEntrypointLoaded: function(engineInitializer) {
+        console.log('Flutter entrypoint loaded');
+
+        engineInitializer.initializeEngine({
+          // Use 'html' renderer for better compatibility
+          renderer: "html",
+        }).then(function(appRunner) {
+          console.log('Flutter engine initialized');
+
+          appRunner.runApp();
+
+          // Hide loading screen after short delay
+          setTimeout(function() {
+            if (loadingContainer) {
+              loadingContainer.style.display = 'none';
+            }
+          }, 500);
+        }).catch(function(error) {
+          console.error('Failed to initialize Flutter engine:', error);
+          if (loadingContainer) {
+            loadingContainer.innerHTML = '<div style="color: #FF6B6B; text-align: center; padding: 20px;"><p>Failed to load application</p><p style="font-size: 12px; margin-top: 10px;">Please refresh the page</p></div>';
+          }
+        });
+      },
+      onEntrypointNotLoaded: function() {
+        console.error('Flutter entrypoint not loaded');
+        if (loadingContainer) {
+          loadingContainer.innerHTML = '<div style="color: #FF6B6B; text-align: center; padding: 20px;"><p>Failed to load Flutter entrypoint</p><p style="font-size: 12px; margin-top: 10px;">Please refresh the page</p></div>';
+        }
+      },
+    }).catch(function(error) {
+      console.error('Error loading Flutter:', error);
+      if (loadingContainer) {
+        loadingContainer.innerHTML = '<div style="color: #FF6B6B; text-align: center; padding: 20px;"><p>Application Error</p><p style="font-size: 12px; margin-top: 10px;">Please refresh the page</p></div>';
+      }
+    });
+  });
+
+  // Fallback: Show error if nothing happens after 15 seconds
+  setTimeout(function() {
+    var loadingContainer = document.getElementById('loading');
+    if (loadingContainer && loadingContainer.style.display !== 'none' && !scriptLoaded) {
+      console.warn('Loading took too long, app might not have started');
+    }
+  }, 15000);
+</script>
+
+<script src="flutter.js" defer></script>
+</body>
+</html>
